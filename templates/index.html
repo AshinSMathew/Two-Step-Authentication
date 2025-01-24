@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Two-Step Verification</h1>
+            <p>Secure your account with ease</p>
+        </div>
+        <div class="content">
+            <p>Welcome to our secure two-step verification system. Choose an option to get started:</p>
+            <div class="links">
+                <a href="/login">Login</a> | <a href="/signup">Signup</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
