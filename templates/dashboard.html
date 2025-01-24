@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Fun Zone</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard_style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Welcome to the Fun Zone! 🎉</h1>
+            <p>Your gateway to endless fun and laughter!</p>
+        </div>
+        <div class="content">
+            <p class="fun-message">Relax, explore, and enjoy. Remember, every click leads to more fun! But think twice before hitting the logout button... 😉</p>
+            <div class="funny-links">
+                <a href="/login" class="btn logout-btn">Logout (if you dare)</a>
+                <a href="#" class="btn stay-btn">Stay and Party 🎈</a>
+            </div>
+            <div class="joke">
+                <p><strong>Why do programmers prefer dark mode?</strong></p>
+                <p class="punchline">Because light attracts bugs! 💡🐛</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
