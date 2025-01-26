@@ -73,22 +73,21 @@ def signup():
     return render_template("signup.html")
 
 @app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         user_email = request.form["email"]
         user_password = request.form["password"]
         captcha = request.form["captcha"]
-        
-        if captcha != session.get("captcha_value"):
+        if captcha.strip().lower() != session.get("captcha_value", "").lower():
             flash("Invalid CAPTCHA!", "error")
             return redirect(url_for("login"))
-        
         query = "SELECT * FROM USER_DETAILS WHERE email=%s AND password=%s"
         cursor.execute(query, (user_email, user_password))
         result = cursor.fetchall()
         
         if not result:
-            flash("Invalid email or password!", "error")
+            flash("Incorrect email or password!", "error")
             return redirect(url_for("login"))
         else:
             session["email"] = user_email
