@@ -8,7 +8,7 @@ from mysql.connector import Error
 import random
 import string
 import io
-
+import hashlib
 
 load_dotenv()
 
@@ -23,7 +23,6 @@ db_user = os.getenv('DB_USER')
 db_password = os.getenv('DB_PASSWORD')
 db_name = os.getenv('DB_NAME')
 
-
 try:
     connection = mysql.connector.connect(
         host=db_host,
@@ -35,6 +34,18 @@ try:
 except Error as err:
     print(f"Error: {err}")
     exit()
+
+def set_index():
+    query = "SELECT MAX(ID) FROM USER_DETAILS"
+    cursor.execute(query)
+    max_id=cursor.fetchone()[0]
+    if max_id is not None:
+        return max_id+1
+    else:
+        return 1001
+
+def hash_text(plain_text):
+    return hashlib.sha256(plain_text.encode()).hexdigest()
 
 def generate_captcha_image(captcha_text):
     image_captcha = ImageCaptcha(width=200, height=70)
@@ -65,8 +76,10 @@ def signup():
             flash("Email is already registered!", "error")
             return redirect(url_for("signup"))
         else:
-            query = "INSERT INTO USER_DETAILS (email, password) VALUES (%s, %s)"
-            cursor.execute(query, (user_email, user_password))
+            count=set_index()
+            hashed_password=hash_text(user_password)
+            query = "INSERT INTO USER_DETAILS (ID, EMAIL, Password) VALUES (%s,%s, %s)"
+            cursor.execute(query, (count, user_email, hashed_password))
             connection.commit()
             flash("Account created successfully! Please login.", "success")
             return redirect(url_for("login"))
@@ -82,8 +95,9 @@ def login():
         if captcha.strip().lower() != session.get("captcha_value", "").lower():
             flash("Invalid CAPTCHA!", "error")
             return redirect(url_for("login"))
+        hashed_password=hash_text(user_password)
         query = "SELECT * FROM USER_DETAILS WHERE email=%s AND password=%s"
-        cursor.execute(query, (user_email, user_password))
+        cursor.execute(query, (user_email, hashed_password))
         result = cursor.fetchall()
         
         if not result:
@@ -101,7 +115,6 @@ def verify():
     if request.method == "POST":
         user_otp = int(request.form["otp"])
         if user_otp == session.get("otp"):
-            flash("Login Successful!", "success")
             return redirect(url_for("dashboard"))
         else:
             flash("Invalid OTP!", "error")
