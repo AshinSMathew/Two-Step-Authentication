@@ -5,6 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .captcha-container {
+            margin: 10px 0;
+        }
+        
+        .captcha-container img {
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -13,7 +57,14 @@
             <p>Access your secure account</p>
         </div>
         <div class="content">
-            <!-- Display error messages -->
+            <!-- Display direct error message -->
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <!-- Display flash messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
@@ -26,23 +77,55 @@
             {% endif %}
             {% endwith %}
             
-            <form method="POST" action="/login">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        value="{{ email or '' }}"
+                        required 
+                        autocomplete="email">
+                </div>
                 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        autocomplete="current-password">
+                </div>
                 
-                <label for="captcha">CAPTCHA:</label>
-                <img src="/captcha" alt="CAPTCHA">
-                <input type="text" id="captcha" name="captcha" required>
+                <div class="form-group">
+                    <label for="captcha">CAPTCHA:</label>
+                    <div class="captcha-container">
+                        <img src="{{ url_for('captcha') }}" alt="CAPTCHA" id="captcha-image">
+                        <input 
+                            type="text" 
+                            id="captcha" 
+                            name="captcha" 
+                            required 
+                            autocomplete="off">
+                    </div>
+                </div>
                 
                 <button type="submit">Login</button>
             </form>
+            
             <div class="links">
-                <a href="/signup">Don't have an account? Sign up</a>
+                <a href="{{ url_for('signup') }}">Don't have an account? Sign up</a>
             </div>
         </div>
     </div>
+
+    <script>
+        // Refresh CAPTCHA image when clicked
+        document.getElementById('captcha-image').addEventListener('click', function() {
+            this.src = "{{ url_for('captcha') }}?" + new Date().getTime();
+        });
+    </script>
 </body>
 </html>
